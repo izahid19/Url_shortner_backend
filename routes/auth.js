@@ -40,6 +40,8 @@ router.post('/signup', rateLimiter, upload.single('profilePic'), async (req, res
     let profilePicData = { url: '', publicId: '' };
     if (req.file) {
       profilePicData = await uploadImage(req.file.buffer, 'profile_pics');
+    } else if (req.body.profilePic && typeof req.body.profilePic === 'string') {
+      profilePicData.url = req.body.profilePic;
     }
 
     // Create user (unverified)
@@ -372,6 +374,15 @@ router.put('/update-profile', auth, upload.single('profilePic'), async (req, res
       const profilePicData = await uploadImage(req.file.buffer, 'profile_pics');
       updateData.profilePic = profilePicData.url;
       updateData.profilePicPublicId = profilePicData.publicId;
+    } else if (req.body.profilePic && typeof req.body.profilePic === 'string') {
+       // If a URL string is provided
+       // If the previous image was hosted on Cloudinary, delete it
+       if (req.user.profilePicPublicId) {
+         await deleteImage(req.user.profilePicPublicId);
+       }
+       
+       updateData.profilePic = req.body.profilePic;
+       updateData.profilePicPublicId = null; // Clear public ID as it's an external URL
     }
 
     const user = await User.findByIdAndUpdate(req.user._id, updateData, { new: true });
