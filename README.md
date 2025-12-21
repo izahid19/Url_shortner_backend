@@ -78,7 +78,7 @@ Backend/
 
 1. **Clone the repository**
    ```bash
-   git clone <repository-url>
+   git clone https://github.com/izahid19/Url_shortner_backend.git
    cd Backend
    ```
 
@@ -358,10 +358,10 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 📞 Support
 
-For support, email your-email@example.com or create an issue in the repository.
+For support, email mushtaqzahid888@gmail.com or create an issue in the [repository](https://github.com/izahid19/Url_shortner_backend/issues).
 
 ---
 
 <div align="center">
-  <p>Made with ❤️ by <strong>Your Name</strong></p>
+  <p>Made with ❤️ by <strong>Zahid Mushtaq</strong></p>
 </div>
