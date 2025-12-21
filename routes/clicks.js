@@ -24,7 +24,7 @@ router.get('/:urlId', auth, async (req, res) => {
       });
     }
 
-    const clicks = await Click.find({ urlId: req.params.urlId });
+    const clicks = await Click.find({ urlId: req.params.urlId }).sort({ createdAt: -1 });
 
     res.json({
       success: true,
@@ -33,7 +33,12 @@ router.get('/:urlId', auth, async (req, res) => {
         url_id: click.urlId,
         city: click.city,
         country: click.country,
+        region: click.region,
         device: click.device,
+        browser: click.browser,
+        os: click.os,
+        ip: click.ip,
+        referer: click.referer,
         created_at: click.createdAt
       }))
     });
@@ -69,7 +74,7 @@ router.post('/multiple', auth, async (req, res) => {
 
     const validUrlIds = urls.map(u => u._id);
 
-    const clicks = await Click.find({ urlId: { $in: validUrlIds } });
+    const clicks = await Click.find({ urlId: { $in: validUrlIds } }).sort({ createdAt: -1 });
 
     res.json({
       success: true,
@@ -78,7 +83,12 @@ router.post('/multiple', auth, async (req, res) => {
         url_id: click.urlId,
         city: click.city,
         country: click.country,
+        region: click.region,
         device: click.device,
+        browser: click.browser,
+        os: click.os,
+        ip: click.ip,
+        referer: click.referer,
         created_at: click.createdAt
       }))
     });
@@ -94,16 +104,22 @@ router.post('/multiple', auth, async (req, res) => {
 /**
  * POST /api/clicks
  * Store a click (public endpoint - called during redirect)
+ * Note: This is now mostly handled by redirect.js, but kept for backwards compatibility
  */
 router.post('/', async (req, res) => {
   try {
-    const { urlId, city, country, device } = req.body;
+    const { urlId, city, country, region, device, browser, os, ip, referer } = req.body;
 
     const click = await Click.create({
       urlId,
       city: city || 'Unknown',
       country: country || 'Unknown',
-      device: device || 'desktop'
+      region: region || 'Unknown',
+      device: device || 'desktop',
+      browser: browser || 'Unknown',
+      os: os || 'Unknown',
+      ip: ip || 'Unknown',
+      referer: referer || 'Direct'
     });
 
     res.status(201).json({
@@ -113,7 +129,12 @@ router.post('/', async (req, res) => {
         url_id: click.urlId,
         city: click.city,
         country: click.country,
+        region: click.region,
         device: click.device,
+        browser: click.browser,
+        os: click.os,
+        ip: click.ip,
+        referer: click.referer,
         created_at: click.createdAt
       }
     });
