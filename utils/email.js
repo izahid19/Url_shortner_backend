@@ -52,8 +52,8 @@ export const sendOtpEmail = async (email, otp, type = 'verify') => {
     },
     body: JSON.stringify({
       sender: {
-        name: process.env.FROM_NAME,
-        email: process.env.FROM_EMAIL
+        name: process.env.BREVO_SENDER_NAME || process.env.FROM_NAME,
+        email: process.env.BREVO_SENDER_EMAIL || process.env.FROM_EMAIL
       },
       to: [{ email }],
       subject,
