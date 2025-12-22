@@ -9,11 +9,31 @@ const router = express.Router();
 
 /**
  * GET /api/urls
- * Get all URLs for the authenticated user
+ * Get all URLs for the authenticated user with pagination and search
+ * Query params: page (default 1), limit (default 10), search (optional)
  */
 router.get('/', auth, async (req, res) => {
   try {
-    const urls = await Url.find({ userId: req.user._id }).sort({ createdAt: -1 });
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const search = req.query.search || '';
+    const skip = (page - 1) * limit;
+
+    // Build query filter
+    const filter = { userId: req.user._id };
+    if (search) {
+      filter.title = { $regex: search, $options: 'i' };
+    }
+
+    // Get total count for pagination
+    const total = await Url.countDocuments(filter);
+    const totalPages = Math.ceil(total / limit);
+
+    // Get paginated URLs
+    const urls = await Url.find(filter)
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit);
     
     res.json({
       success: true,
@@ -26,7 +46,15 @@ router.get('/', auth, async (req, res) => {
         custom_url: url.customUrl,
         qr: url.qr,
         created_at: url.createdAt
-      }))
+      })),
+      pagination: {
+        page,
+        limit,
+        total,
+        totalPages,
+        hasNext: page < totalPages,
+        hasPrev: page > 1
+      }
     });
   } catch (error) {
     console.error('Get URLs error:', error);
