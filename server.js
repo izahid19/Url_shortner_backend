@@ -36,6 +36,8 @@ app.use('/api/auth', authRoutes);
 app.use('/api/urls', urlRoutes);
 app.use('/api/clicks', clickRoutes);
 
+console.log("bug fixedx");
+
 // Redirect routes (must be last - catches /:shortCode)
 app.use('/', redirectRoutes);
 
